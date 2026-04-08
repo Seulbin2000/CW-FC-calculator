@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회식 정산 프로그램</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: #6b7280;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .grid {
+      display: grid;
+      gap: 20px;
+    }
+    .top-grid {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+    .bottom-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      border: 1px solid #e5e7eb;
+    }
+    .card h2, .card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .space-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .stat-box {
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 14px;
+      background: #fafafa;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .stat-value {
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #d1d5db;
+      font-size: 16px;
+      background: white;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    .muted {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #eef2ff;
+      color: #3730a3;
+    }
+    .badge.gray {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    .badge.green {
+      background: #ecfdf5;
+      color: #065f46;
+    }
+    .badge.orange {
+      background: #fff7ed;
+      color: #9a3412;
+    }
+    button {
+      border: none;
+      background: #111827;
+      color: white;
+      padding: 11px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: white;
+      color: #111827;
+      border: 1px solid #d1d5db;
+    }
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .people-list, .result-list {
+      max-height: 650px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+    .person-item, .result-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+    .person-controls {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .checkline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    .result-amount {
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .highlight {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      background: #f3f4f6;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+    }
+    .tab.active {
+      background: #111827;
+      color: white;
+    }
+    .summary-box {
+      white-space: pre-line;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 14px;
+      line-height: 1.6;
+    }
+    @media (max-width: 900px) {
+      .top-grid, .bottom-grid, .section-grid {
+        grid-template-columns: 1fr;
+      }
+      .stat-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 640px) {
+      .container { padding: 14px; }
+      .title { font-size: 24px; }
+      .stat-grid { grid-template-columns: 1fr; }
+      button { width: 100%; }
+      .row > * { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">회식 정산 프로그램</div>
+    <div class="subtitle">
+      학생 할인율과 비음주자 가중치를 반영해서 자동으로 정산합니다.<br>
+      참석 여부와 그날 술을 마셨는지만 체크하면 바로 계산됩니다.
+    </div>
+
+    <div class="grid top-grid">
+      <div class="card">
+        <div class="space-between">
+          <h2>기본 설정</h2>
+          <div class="row">
+            <button class="secondary" onclick="setAllAttendance(true)">전체 참석</button>
+            <button class="secondary" onclick="setAllAttendance(false)">전체 해제</button>
+            <button class="secondary" onclick="resetAll()">초기화</button>
+          </div>
+        </div>
+
+        <div class="section-grid">
+          <div>
+            <label for="totalAmount">총 금액</label>
+            <input id="totalAmount" type="text" inputmode="numeric" value="88000" oninput="handleAmountInput(this)">
+            <div class="muted" style="margin-top:8px;">입력한 총 금액을 현재 참석 인원과 조건에 맞춰 나눕니다.</div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat-box">
+              <div class="stat-label">참석 인원</div>
+              <div class="stat-value" id="attendeeCount">0명</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">직장인</div>
+              <div class="stat-value" id="workerCount">0명</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">학생</div>
+              <div class="stat-value" id="studentCount">0명</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-grid" style="margin-top:22px;">
+          <div>
+            <div class="space-between">
+              <label for="studentDiscount">학생 할인율</label>
+              <span class="badge" id="studentDiscountLabel">25%</span>
+            </div>
+            <input id="studentDiscount" type="range" min="20" max="30" step="1" value="25" oninput="render()">
+            <div class="muted" style="margin-top:8px;">학생은 직장인보다 보통 20~30% 적게 내는 기준을 반영합니다.</div>
+          </div>
+          <div>
+            <div class="space-between">
+              <label for="nonDrinkerWeight">비음주자 가중치</label>
+              <span class="badge gray" id="nonDrinkerWeightLabel">55%</span>
+            </div>
+            <input id="nonDrinkerWeight" type="range" min="30" max="80" step="5" value="55" oninput="render()">
+            <div class="muted" style="margin-top:8px;">술을 안 마시는 사람은 보통 어느 정도만 낼지 직접 조절할 수 있습니다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>계산 규칙</h2>
+        <div class="highlight">
+          <div><strong>직장인 + 음주</strong> = 1.00</div>
+          <div style="margin-top:8px;"><strong>학생 + 음주</strong> = 1 - 학생 할인율</div>
+          <div style="margin-top:8px;"><strong>직장인 + 비음주</strong> = 비음주자 가중치</div>
+          <div style="margin-top:8px;"><strong>학생 + 비음주</strong> = 학생 할인 + 비음주 가중치 동시 반영</div>
+        </div>
+        <div class="muted" style="margin-top:14px;">
+          예를 들어 학생 할인율이 25%면 학생 음주자는 직장인 음주자의 75% 수준으로 계산됩니다.
+          비음주자 가중치가 55%면 술을 안 마신 사람은 해당 신분 기준 금액의 55%만 부담합니다.
+        </div>
+        <div class="highlight" style="margin-top:16px;">
+          <div class="space-between">
+            <span>총 금액</span>
+            <strong id="summaryTotal">88,000원</strong>
+          </div>
+          <div class="space-between" style="margin-top:10px;">
+            <span>총 가중치</span>
+            <strong id="summaryWeight">0.00</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid bottom-grid" style="margin-top:20px;">
+      <div class="card">
+        <div class="space-between">
+          <h2>참석자 설정</h2>
+          <div class="tabs">
+            <button id="tab-all" class="tab active" onclick="setTab('all')">전체</button>
+            <button id="tab-worker" class="tab" onclick="setTab('worker')">직장인</button>
+            <button id="tab-student" class="tab" onclick="setTab('student')">학생</button>
+          </div>
+        </div>
+        <div class="people-list" id="peopleList"></div>
+      </div>
+
+      <div class="card">
+        <div class="space-between">
+          <h2>정산 결과</h2>
+          <button onclick="copySummary()">결과 복사</button>
+        </div>
+
+        <div class="stat-grid" style="margin-bottom:16px;">
+          <div class="stat-box">
+            <div class="stat-label">직장인 + 음주</div>
+            <div class="stat-value" id="workerDrinkerCount">0명</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">학생 + 음주</div>
+            <div class="stat-value" id="studentDrinkerCount">0명</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">비음주</div>
+            <div class="stat-value" id="nonDrinkerCount">0명</div>
+          </div>
+        </div>
+
+        <div class="summary-box" id="copyTextBox" style="margin-bottom:16px;"></div>
+        <div class="result-list" id="resultList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const initialPeople = [
+      { name: "슬빈", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "경문", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "균정", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "기성", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "석태", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "용빈", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "동현", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "봉호", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "순민", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "영석", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "인훈", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "창현", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "태홍", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "현성", type: "worker", drinksAlcohol: true, attending: true },
+      { name: "호진", type: "student", drinksAlcohol: true, attending: true },
+      { name: "현도", type: "student", drinksAlcohol: true, attending: true },
+      { name: "민준", type: "student", drinksAlcohol: true, attending: true },
+      { name: "상현", type: "student", drinksAlcohol: true, attending: true },
+      { name: "서형", type: "student", drinksAlcohol: true, attending: true },
+      { name: "도윤", type: "student", drinksAlcohol: true, attending: true },
+      { name: "민석", type: "worker", drinksAlcohol: false, attending: true }
+    ];
+
+    let people = JSON.parse(JSON.stringify(initialPeople));
+    let currentTab = 'all';
+
+    function formatNumber(value) {
+      return Math.round(value).toLocaleString('ko-KR');
+    }
+
+    function formatCurrency(value) {
+      return formatNumber(value) + '원';
+    }
+
+    function getTotalAmount() {
+      const raw = document.getElementById('totalAmount').value.replace(/[^0-9]/g, '');
+      return Number(raw || 0);
+    }
+
+    function handleAmountInput(input) {
+      input.value = input.value.replace(/[^0-9]/g, '');
+      render();
+    }
+
+    function setTab(tab) {
+      currentTab = tab;
+      document.getElementById('tab-all').classList.toggle('active', tab === 'all');
+      document.getElementById('tab-worker').classList.toggle('active', tab === 'worker');
+      document.getElementById('tab-student').classList.toggle('active', tab === 'student');
+      renderPeople();
+    }
+
+    function updatePerson(name, key, value) {
+      const target = people.find(p => p.name === name);
+      if (target) {
+        target[key] = value;
+        render();
+      }
+    }
+
+    function setAllAttendance(value) {
+      people.forEach(p => p.attending = value);
+      render();
+    }
+
+    function resetAll() {
+      people = JSON.parse(JSON.stringify(initialPeople));
+      document.getElementById('totalAmount').value = '88000';
+      document.getElementById('studentDiscount').value = '25';
+      document.getElementById('nonDrinkerWeight').value = '55';
+      currentTab = 'all';
+      document.getElementById('tab-all').classList.add('active');
+      document.getElementById('tab-worker').classList.remove('active');
+      document.getElementById('tab-student').classList.remove('active');
+      render();
+    }
+
+    function getWeight(person, studentDiscount, nonDrinkerWeight) {
+      const studentMultiplier = person.type === 'student' ? (1 - studentDiscount / 100) : 1;
+      const drinkMultiplier = person.drinksAlcohol ? 1 : (nonDrinkerWeight / 100);
+      return studentMultiplier * drinkMultiplier;
+    }
+
+    function calculateResults() {
+      const totalAmount = getTotalAmount();
+      const studentDiscount = Number(document.getElementById('studentDiscount').value);
+      const nonDrinkerWeight = Number(document.getElementById('nonDrinkerWeight').value);
+      const active = people.filter(p => p.attending);
+
+      const weighted = active.map(person => ({
+        ...person,
+        weight: getWeight(person, studentDiscount, nonDrinkerWeight)
+      }));
+
+      const totalWeight = weighted.reduce((sum, p) => sum + p.weight, 0);
+      const rows = weighted.map(p => ({
+        ...p,
+        rawAmount: totalWeight > 0 ? totalAmount * p.weight / totalWeight : 0,
+        amount: totalWeight > 0 ? Math.round((totalAmount * p.weight / totalWeight) / 100) * 100 : 0
+      }));
+
+      let roundedSum = rows.reduce((sum, row) => sum + row.amount, 0);
+      let diff = totalAmount - roundedSum;
+      if (rows.length > 0 && diff !== 0) {
+        rows.sort((a, b) => b.rawAmount - a.rawAmount);
+        rows[0].amount += diff;
+      }
+
+      rows.sort((a, b) => b.amount - a.amount);
+
+      return {
+        totalAmount,
+        studentDiscount,
+        nonDrinkerWeight,
+        active,
+        rows,
+        totalWeight,
+        workerCount: active.filter(p => p.type === 'worker').length,
+        studentCount: active.filter(p => p.type === 'student').length,
+        workerDrinkerCount: active.filter(p => p.type === 'worker' && p.drinksAlcohol).length,
+        studentDrinkerCount: active.filter(p => p.type === 'student' && p.drinksAlcohol).length,
+        nonDrinkerCount: active.filter(p => !p.drinksAlcohol).length
+      };
+    }
+
+    function renderPeople() {
+      const list = document.getElementById('peopleList');
+      let filtered = people;
+      if (currentTab === 'worker') filtered = people.filter(p => p.type === 'worker');
+      if (currentTab === 'student') filtered = people.filter(p => p.type === 'student');
+
+      list.innerHTML = filtered.map(person => `
+        <div class="person-item">
+          <div class="space-between">
+            <div>
+              <div style="font-size:18px; font-weight:800;">${person.name}</div>
+              <div class="row" style="margin-top:8px;">
+                <span class="badge ${person.type === 'worker' ? 'green' : 'orange'}">${person.type === 'worker' ? '직장인' : '학생'}</span>
+                <span class="badge gray">${person.drinksAlcohol ? '음주' : '비음주'}</span>
+              </div>
+            </div>
+          </div>
+          <div class="person-controls">
+            <label class="checkline">
+              <input type="checkbox" ${person.attending ? 'checked' : ''} onchange="updatePerson('${person.name}', 'attending', this.checked)">
+              참석
+            </label>
+            <label class="checkline">
+              <input type="checkbox" ${person.drinksAlcohol ? 'checked' : ''} onchange="updatePerson('${person.name}', 'drinksAlcohol', this.checked)">
+              술 마심
+            </label>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function buildCopyText(data) {
+      if (data.rows.length === 0) return '참석자를 선택하면 정산 결과가 여기에 표시됩니다.';
+      const lines = [];
+      lines.push(`총 금액: ${formatCurrency(data.totalAmount)}`);
+      lines.push(`학생 할인율: ${data.studentDiscount}% / 비음주자 가중치: ${data.nonDrinkerWeight}%`);
+      lines.push('');
+      data.rows.forEach(row => {
+        const role = row.type === 'worker' ? '직장인' : '학생';
+        const drink = row.drinksAlcohol ? '음주' : '비음주';
+        lines.push(`${row.name} (${role}, ${drink}): ${formatCurrency(row.amount)}`);
+      });
+      return lines.join('\n');
+    }
+
+    function copySummary() {
+      const data = calculateResults();
+      const text = buildCopyText(data);
+      navigator.clipboard.writeText(text)
+        .then(() => alert('정산 결과를 복사했어.'))
+        .catch(() => alert('복사에 실패했어. 직접 길게 눌러서 복사해줘.'));
+    }
+
+    function renderResults() {
+      const data = calculateResults();
+
+      document.getElementById('attendeeCount').textContent = data.active.length + '명';
+      document.getElementById('workerCount').textContent = data.workerCount + '명';
+      document.getElementById('studentCount').textContent = data.studentCount + '명';
+      document.getElementById('workerDrinkerCount').textContent = data.workerDrinkerCount + '명';
+      document.getElementById('studentDrinkerCount').textContent = data.studentDrinkerCount + '명';
+      document.getElementById('nonDrinkerCount').textContent = data.nonDrinkerCount + '명';
+      document.getElementById('summaryTotal').textContent = formatCurrency(data.totalAmount);
+      document.getElementById('summaryWeight').textContent = data.totalWeight.toFixed(2);
+      document.getElementById('studentDiscountLabel').textContent = data.studentDiscount + '%';
+      document.getElementById('nonDrinkerWeightLabel').textContent = data.nonDrinkerWeight + '%';
+      document.getElementById('copyTextBox').textContent = buildCopyText(data);
+
+      const resultList = document.getElementById('resultList');
+      if (data.rows.length === 0) {
+        resultList.innerHTML = '<div class="result-item">참석자를 선택하면 정산 결과가 표시됩니다.</div>';
+        return;
+      }
+
+      resultList.innerHTML = data.rows.map(row => `
+        <div class="result-item">
+          <div class="space-between">
+            <div>
+              <div style="font-size:18px; font-weight:800;">${row.name}</div>
+              <div class="row" style="margin-top:8px;">
+                <span class="badge ${row.type === 'worker' ? 'green' : 'orange'}">${row.type === 'worker' ? '직장인' : '학생'}</span>
+                <span class="badge gray">${row.drinksAlcohol ? '음주' : '비음주'}</span>
+                <span class="badge gray">가중치 ${row.weight.toFixed(2)}</span>
+              </div>
+            </div>
+            <div class="result-amount">${formatCurrency(row.amount)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function render() {
+      renderPeople();
+      renderResults();
+    }
+
+    render();
+  </script>
+</body>
+</html>
